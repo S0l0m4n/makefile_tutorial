@@ -1,0 +1,11 @@
+# Make with no arguments executes the first line in the file.
+#
+# If you want to call the makefile something other than Makefile, then you need
+# to invoke make like this:
+#   $: make -f <makefile>
+#
+# Here we've defined a *rule* with *target* hellomake and *dependencies* hellomake.c and
+# hellofunc.c. If any of the dependencies change, then the rule is executed
+# again to remake the target. 
+hellomake: hellomake.c hellofunc.c
+	gcc -o hellomake hellomake.c hellofunc.c -I .
