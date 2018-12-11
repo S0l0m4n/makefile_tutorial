@@ -1,0 +1,16 @@
+CC=gcc
+CFLAGS=-I.
+DEPS=hellomake.h
+
+# This rule specifies that each object file depends on its corresponding source
+# file plus $(DEPS). The compilation line builds an object file ($@) with the same
+# name as the source and with a dependency on the first item ($<) from
+# $(CFLAGS).
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+hellomake: hellomake.o hellofunc.o
+	$(CC) -o hellomake hellomake.o hellofunc.o
+
+# This will rebuild hellomake even if the header file hellomake.h changes,
+# because it has been listed as a dependency for each object file.
