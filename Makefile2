@@ -1,0 +1,11 @@
+CC=gcc
+CFLAGS=-I.
+
+# This rule is executed only if the object files change. Make is smart enough to
+# only rebuild the object files that have change before performing the
+# compilation. It will invoke $CC with $CFLAGS implicitly, so you don't need to
+# specify this variable in the rule's body. Furthermore, it will
+# build the .o file from the .c file if it doesn't already exist, via:
+#   $: $CC -c foo.c
+hellomake: hellomake.o hellofunc.o
+	$(CC) -o hellomake hellomake.o hellofunc.o
