@@ -1,0 +1,145 @@
+Makefile Tutorial
+=================
+The make tool has a number of builtin rules and variables.
+
+COMPILE.cpp = COMPILE.cc
+
+COMPILE.cc = $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
+CXX = g++
+
+# Builtin rule
+# Compile each target cpp file into an object file from the matching source file
+.cpp.o:
+	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+
+The point of implicit rules is to save you from typing everything yourself into
+the makefile. Usually everyone needs to do the same kinds of operations in
+makefiles, so it's a bit pointless always having to specify the same thing over
+and over.
+
+Example:
+
+~ Makefile ~
+
+foo : foo.o bar.o
+	cc -o foo foo.o bar.o $(CFLAGS) $(LDFLAGS)
+
+~~~
+
+Clearly, the rule describes building target foo from the object files foo.o and
+bar.o. However, no rule was given for building the object files themselves. So
+the make tool looks in its catalogue of builtin rules to find one that can build
+foo.o, bar.o. Luckily, there are plenty, for each kind of source file, including
+.c source.
+
+If you leave out necessary steps to build a target, then make will try to find
+an implicit rule from its catalogue to fill in the blanks.
+
+In general, make searches for an implicit rule for each target, and for each
+double-colon rule, that has no commands. If a file is mentioned only as a
+prerequisite, it is considered a target with an unspecified rule, so implicit
+rule search also happens for it.
+
+Explicit prerequisites DO NOT influence implicit rule search. Consider this
+explicit rule, for example:
+
+foo.o : foo.p
+
+Here, make does not use the implicit rule for Pascal files if there is also a C
+source file foo.c; instead, it will use the implicit rule for the C source,
+because this rule has higher priority in the list. However, in this case foo.o
+will still depend on foo.p if YOU define a rule for it, because it has been
+explicitly specified. The Pascal implicit rule only kicks in if foo.c does not
+exist.
+
+Implict rules
+-------------
+If you invoke make with '-r' or '--no-builtin-rules', then these do not apply:
+
+C programs: n.o is made from n.c via: $(CC) -c $(CPPFLAGS) $(CFLAGS)
+
+C++ programs: n.o is made from n.cc or n.C via:
+$(CXX) -c $(CPPFLAGS) $(CXXFLAGS)
+
+Assembly: n.o is made from n.s via: $(AS) $(ASFLAGS)
+
+Linking: n is made from n.o by running the linker (ld) via the C compiler:
+$(CC) $(LDFLAGS) n.o $(LOADLIBES) $(LDLIBS)
+
+- Works for one or more object files
+- Example:
+
+x: y.o.z.o
+
+If x.c, y.c and z.c all exist, then make will execute:
+$: cc -c x.c -o x.o
+$: cc -c y.c -o y.o
+$: cc -c z.c -o y.z
+$: cc x.o y.o z.o -o x
+$: rm -f x.o
+$: rm -f y.o
+$: rm -f z.o
+
+- In more complicated cases, you will have to write an explicit command for
+  linking
+
+Variables
+---------
+The C compiler is always invoked thus in implicit rules:
+$(CC) -c $(CFLAGS) $(CPPFLAGS)
+
+The default values for important variables are:
+CC      = cc
+CXX     = g++
+RM      = rm -f
+
+Note CFLAGS and CPPFLAGS, although always passed to CC, are empty by default
+
+Chains of implicit rules
+------------------------
+A bit complicated... passing for now
+
+Defining/redefining pattern rules
+---------------------------------
+Define an implicit rule by writing a *pattern* rule. A pattern rule looks like
+an ordinary rule except the target contains the '%' character (exactly one of
+them).
+
+e.g. The rule: "%.c : %.o" describes how to make foo.c from foo.o, or any other
+such stem.
+
+Old-fashioned suffix rules
+--------------------------
+The old-school way for defining implicit rules for make, retained for backwards
+compatibility.
+
+* double-suffix: target suffix + source suffix
+e.g. .c.o:  ==      %.o : %.c
+
+* single-suffix: source suffix
+e.g. .c     ==      % : %.c
+
+The suffix rule definition is recognised by comparing the target's suffix
+against the defined list of known suffixes. If make sees a rule whose target has
+a known suffix, then this is considered a single-suffix rule. If make sees a
+rule with two known suffixes concatenated, e.g. ".o.c", then this is taken as a
+double suffix with .o as target and .c as source.
+
+Implict rule:
+
+# Equivalent declaration:   %.o : %.c
+.c.o:
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+
+This rule makes the target foo.o ($@) from the first matching prereq foo.c ($<)
+
+The known suffixes are the prereqs defined for the special rule .SUFFIXES
+You add more suffixes to the end of the predefined list by simply adding the
+this rule with the extra suffixes:
+.SUFFIXES: .hack .win
+
+To make a custom suffix list, removing the predefined entries:
+.SUFFIXES:
+.SUFFIXES: .c .o .h
+
+You can also use "make -r" to make the suffix list empty
