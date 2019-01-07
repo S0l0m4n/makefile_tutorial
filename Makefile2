@@ -9,3 +9,7 @@ CFLAGS=-I.
 #   $: $CC -c foo.c
 hellomake: hellomake.o hellofunc.o
 	$(CC) -o hellomake hellomake.o hellofunc.o
+
+# The only problem now is that if the header file changes, make will NOT detect
+# the change. This is obviously bad, but complicates the makefile in order to
+# rectify it. We have to add another rule to accommodate this dependency.

@@ -6,6 +6,6 @@
 #
 # Here we've defined a *rule* with *target* hellomake and *dependencies* hellomake.c and
 # hellofunc.c. If any of the dependencies change, then the rule is executed
-# again to remake the target. 
+# again to remake the target. That means ALL the dependencies are rebuilt.
 hellomake: hellomake.c hellofunc.c
 	gcc -o hellomake hellomake.c hellofunc.c -I .
