@@ -122,7 +122,7 @@ e.g. .c     ==      % : %.c
 The suffix rule definition is recognised by comparing the target's suffix
 against the defined list of known suffixes. If make sees a rule whose target has
 a known suffix, then this is considered a single-suffix rule. If make sees a
-rule with two known suffixes concatenated, e.g. ".o.c", then this is taken as a
+rule with two known suffixes concatenated, e.g. ".c.o", then this is taken as a
 double suffix with .o as target and .c as source.
 
 Implict rule:
