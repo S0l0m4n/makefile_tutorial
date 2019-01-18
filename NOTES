@@ -143,3 +143,15 @@ To make a custom suffix list, removing the predefined entries:
 .SUFFIXES: .c .o .h
 
 You can also use "make -r" to make the suffix list empty
+
+String substitution
+-------------------
+* $(subst ee,EE,feet on the street)
+-> fEEt on the strEEt
+
+* $(patsubst %.c,%.o,x.c.c bar.c)
+-> x.c.o, bar.o
+n.b. Only the first % pattern is matched, and the matching occurs greedily. So
+%.c matches the first x.c in x.c.c, i.e. (x.c).c
+
+* $(var:pattern=replacement)    ==  $(patsubst pattern,replacement,$(var))

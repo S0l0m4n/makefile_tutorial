@@ -1,0 +1,32 @@
+# My version of the final makefile
+IDIR=inc
+CC=gcc
+CFLAGS=-I$(IDIR)
+
+ODIR=obj
+
+# Must not put spaces within the susbstitution reference (between : and =)
+_DEPS = hellomake.h
+DEPS = $(_DEPS:%=$(IDIR)/%)
+
+_OBJ = hellomake.o hellofunc.o 
+OBJ = $(_OBJ:%=$(ODIR)/%)
+
+# Build object files
+# Create ODIR if it doesn't exist
+# NOTE: Must include CFLAGS in the compilation (not included by default for some
+# reason)
+$(ODIR)/%.o: %.c $(DEPS)
+	@install -d $(ODIR)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+# Refer to target via a variable
+TARGET=hellomake
+
+$(TARGET): $(OBJ)
+	$(CC) -o $@ $^
+
+.PHONY: clean
+
+clean:
+	rm -rf $(ODIR) $(TARGET)
