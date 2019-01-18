@@ -155,3 +155,14 @@ n.b. Only the first % pattern is matched, and the matching occurs greedily. So
 %.c matches the first x.c in x.c.c, i.e. (x.c).c
 
 * $(var:pattern=replacement)    ==  $(patsubst pattern,replacement,$(var))
+
+Determining prerequisites
+-------------------------
+The -M option of gcc can output a rule for make describing the dependencies of
+the given source file. Use -MF to specify the file to write this rule to.
+
+The output of $: gcc -M foo.c is something like:
+foo.o: foo.c inc1.h ... incN.h
+
+where foo.c is the source and inc1.h, ..., incN.h are the included header files.
+If any one of these files changes, then foo.o will be rebuilt.
