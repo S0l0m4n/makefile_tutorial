@@ -1,0 +1,12 @@
+CC=gcc
+CFLAGS=-I.
+DEPS=hellomake.h
+OBJS=hellomake.o hellofunc.o
+
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+# Use the variables $@ and $^ to represent the files on the left and right of :
+# Define all object files in OBJS variable
+hellomake: $(OBJS)
+	$(CC) -o $@ $^
